@@ -1,0 +1,96 @@
+swagger: "2.0"
+info:
+  description: "DNA Account API"
+  version: "0.1.0"
+  title: "DNA Account API"
+  contact:
+    name: "DNA API Support"
+    url: "http://com.uscm.eservice/support"
+    email: "dna.architecture@LibertyMutual.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+paths:
+  /accounts/{userId}:
+      get:
+        summary: "Get Account Summary"
+        description: "Get account summary for a given userId"
+        parameters:
+        - name: userId
+          in: path
+          pattern: "[a-zA-Z]+"
+          required: true
+          type: string
+        tags:
+        - "accounts"
+        produces:
+        - "application/json"
+        responses:
+          200:
+            description: "Account Summary"
+            schema:
+              $ref: "#/definitions/AccountResponse"
+          400:
+            description: "Unable to provide a version due to invalid or insufficient data provided by the client"
+            schema:
+              $ref: "#/definitions/ErrorResponse"
+          403:
+            description: "Client is not permitted to use this operation"
+            schema:
+              $ref: "#/definitions/ErrorResponse"
+          500:
+            description: "Internal server error"
+            schema:
+              $ref: "#/definitions/ErrorResponse"
+definitions:
+  AccountResponse:
+    type: "object"
+    properties:
+      foo:
+        type: "string"
+        description: "First name of the user with the test ID given."
+  ErrorResponse:
+    type: object
+    properties:
+      error:
+        $ref: '#/definitions/APIError'
+    required:
+      - error
+    description: An error response
+  APIError:
+    type: object
+    properties:
+      code:
+        type: string
+        description: A server defined error code that uniquely identifies error
+      message:
+        type: string
+        description: A human-readable description of the error encountered while processing the request
+      target:
+        type: string
+        description: The property in question that triggered the error
+      details:
+        type: array
+        description: An array of more specific errors that led to the currently reported error
+        items:
+          $ref: '#/definitions/APIError'
+      innererror:
+        $ref: '#/definitions/InnerError'
+      link:
+        type: string
+        description: A link to relevant documentation for this error
+    required:
+      - code
+      - message
+    description: More specific information about an encountered error
+  InnerError:
+    type: object
+    properties:
+      code:
+        type: string
+        description: A server defined error code that uniquely identifies error
+      innererror:
+        $ref: '#/definitions/InnerError'
+    required:
+      - code
+    description: An object containing more specific information than the current object about the error.
